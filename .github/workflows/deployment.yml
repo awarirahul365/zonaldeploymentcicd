@@ -35,10 +35,11 @@ jobs:
               python -m venv .venv
               source .venv/bin/activate
 
-          - name: 'Install dependenices'
+          - name: 'Install dependencies'
             run: |
               ls -a
-              pip install -r ./requirements.txt
+              .venv/bin/pip install -r requirements.txt
+            
 
           - name: Azure Login SPN
             run: |
