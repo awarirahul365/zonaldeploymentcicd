@@ -25,20 +25,10 @@ jobs:
           - name: Checkout Repo
             uses: actions/checkout@v4
 
-          - name: 'Setup Python environment'
-            uses: actions/setup-python@v4
-            with:
-              python-version: ${{env.PYTHON_VERSION}}
-          
-          - name: 'Create Virtual env'
-            run: |
-              python -m venv .venv
-              source .venv/bin/activate
-
           - name: 'Install dependencies'
             run: |
               ls -a
-              .venv/bin/pip install -r requirements.txt
+              pip install -r ./requirements.txt
             
 
           - name: Azure Login SPN
