@@ -10,9 +10,10 @@ env:
   AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
   AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
   AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+  AZURE_SUBSCRIPTIONID: ${{secrets.AZURE_SUBSCRIPTIONID}}
 
 jobs:
-    build-and-deploy:
+    azurelogin:
         runs-on: ubuntu-latest
         container:
           image: mcr.microsoft.com/azure-cli:latest
@@ -20,8 +21,39 @@ jobs:
           - name: Azure Login SPN
             run: |
               az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID --allow-no-subscriptions
-              az account show
+              az account set --subscription $AZURE_SUBSCRIPTIONID
+    
+    deploy:
+        runs-on: ubuntu-latest
+        needs: azurelogin
+        container:
+          image: python:3.11
+        steps:
+          - name: Checkout Code
+            uses: actions/checkout@v4
+          
+          - name: Setup Python env
+            run: |
+              python -m venv venv  # Create virtual environment
+              source venv/bin/activate
+          
+          - name: Install Dependencies 
+            run: |
+              pip install -r requirements.txt
+
+          - name: Zip file
+            run: |
+              zip -r functionapp.zip .
+            shell: bash
+
+          - name: Deploy FunctionApp
+            run: | 
+              az functionapp deployment source config-zip \
+                --resource-group "zonaldeployment-azpoe-rg" \
+                --name "zonaldeployment-azpoe-function" \
+                --src-path ./functionapp.zip
             
+    
             
                 
 
