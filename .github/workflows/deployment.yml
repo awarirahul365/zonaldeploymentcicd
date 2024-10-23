@@ -11,53 +11,48 @@ env:
   AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
   AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
   AZURE_SUBSCRIPTIONID: ${{secrets.AZURE_SUBSCRIPTIONID}}
+  PYTHON_VERSION: '3.11'
 
 jobs:
     azurelogin:
         runs-on: ubuntu-latest
-        container:
-          image: mcr.microsoft.com/azure-cli:latest
-        steps:
-          - name: Azure Login SPN
-            run: |
-              az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID --allow-no-subscriptions
-              az account set --subscription $AZURE_SUBSCRIPTIONID
-    
-    deploy:
-        runs-on: ubuntu-latest
-        needs: azurelogin
-        container:
-          image: python:3.11
-        steps:
-          - name: Checkout Code
-            uses: actions/checkout@v4
-          
-          - name: Setup Python env
-            run: |
-              python -m venv .venv  
-              source .venv/bin/activate
+        defaults:
+          run:
             shell: bash
-          
-          - name: Install zip utility
-            run: |
-              apt-get update && apt-get install -y zip
+        steps:
+          - name: Checkout Repo
+            uses: actions/checkout@v4
 
-          - name: Install Dependencies 
+          - name: 'Setup Python environment'
+            uses: actions/setup-python@v4
+            with:
+              python-version: ${{env.PYTHON_VERSION}}
+          
+          - name: 'Create Virtual env'
+            run: |
+              python -m venv .venv
+              source .venv/bin/activate
+
+          - name: 'Install dependenices'
             run: |
               pip install -r requirements.txt
 
-          - name: Zip file
+          - name: 'Zip File'
             run: |
-              curl -sL https://aka.ms/InstallAzureCLIDeb
               zip -r functionapp.zip .
-            shell: bash
+              ls -a
+            
+          - name: 'Upload Artifact'
+            uses: actions/upload-artifact@v4
+            with:
+              name: functionappzip
+              path: ./functionapp.zip
 
-          - name: Deploy FunctionApp
-            run: | 
-              az functionapp deployment source config-zip \
-                --resource-group "zonaldeployment-azpoe-rg" \
-                --name "zonaldeployment-azpoe-function" \
-                --src-path ./functionapp.zip
+
+          
+    
+    
+              
             
     
             
