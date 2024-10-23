@@ -48,6 +48,7 @@ jobs:
 
           - name: Zip file
             run: |
+              curl -sL https://aka.ms/InstallAzureCLIDeb
               zip -r functionapp.zip .
             shell: bash
 
