@@ -37,7 +37,8 @@ jobs:
 
           - name: 'Install dependenices'
             run: |
-              pip install -r requirements.txt
+              ls -a
+              pip install -r ./requirements.txt
 
           - name: Azure Login SPN
             run: |
