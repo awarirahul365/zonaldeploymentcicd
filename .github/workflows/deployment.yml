@@ -38,6 +38,10 @@ jobs:
               source .venv/bin/activate
             shell: bash
           
+          - name: Install zip utility
+            run: |
+              apt-get update && apt-get install -y zip
+
           - name: Install Dependencies 
             run: |
               pip install -r requirements.txt
