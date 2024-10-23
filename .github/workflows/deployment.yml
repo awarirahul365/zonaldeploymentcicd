@@ -34,8 +34,9 @@ jobs:
           
           - name: Setup Python env
             run: |
-              python -m venv venv  # Create virtual environment
-              source venv/bin/activate
+              python -m venv .venv  
+              source .venv/bin/activate
+            shell: bash
           
           - name: Install Dependencies 
             run: |
