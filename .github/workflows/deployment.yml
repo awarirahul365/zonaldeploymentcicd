@@ -16,6 +16,8 @@ env:
 jobs:
     buildzip:
         runs-on: ubuntu-latest
+        container:
+          image: mcr.microsoft.com/azure-functions/python:4-python3.11-core-tools
         defaults:
           run:
             shell: bash
@@ -37,38 +39,19 @@ jobs:
             run: |
               pip install -r requirements.txt
 
-          - name: 'Zip File'
+          - name: Azure Login SPN
             run: |
-              zip -r functionapp.zip .
-              ls -a
+              az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID --allow-no-subscriptions
+              az account set --subscription $AZURE_SUBSCRIPTIONID
             
-          - name: 'Upload Artifact'
-            uses: actions/upload-artifact@v4
-            with:
-              name: functionappzip
-              path: ./functionapp.zip
+          - name: Publish Zip
+            run: |
+              ls -a
+              func azure functionapp publish azpoe-hecmonitor-anfquotaincrease --no-build --python 
+          
 
-    azrdeploy:
-      runs-on: ubuntu-latest
-      needs: buildzip
-      container:
-        image: mcr.microsoft.com/azure-functions/python:4-python3.11-core-tools
-      
-      steps:
-        - name: Download Artifact
-          uses: actions/download-artifact@v4
-          with:
-            name: functionappzip 
 
-        - name: Azure Login SPN
-          run: |
-            az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID --allow-no-subscriptions
-            az account set --subscription $AZURE_SUBSCRIPTIONID
         
-        - name: Publish Zip
-          run: |
-            ls -a
-            func azure functionapp publish azpoe-hecmonitor-anfquotaincrease --no-build --python --src ./functionapp.zip
 
     
 
