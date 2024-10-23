@@ -52,7 +52,7 @@ jobs:
       runs-on: ubuntu-latest
       needs: buildzip
       container:
-        image: mcr.microsoft.com/azure-cli:latest
+        image: mcr.microsoft.com/azure-functions/python:4-python3.11-core-tools
       
       steps:
         - name: Download Artifact
