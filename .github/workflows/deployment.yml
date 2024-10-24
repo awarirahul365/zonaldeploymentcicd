@@ -17,7 +17,7 @@ jobs:
     buildzip:
         runs-on: ubuntu-latest
         container:
-          image: mcr.microsoft.com/azure-functions/python:4-python3.11-core-tools
+          image: mcr.microsoft.com/azure-functions/python:4-python3.11
         defaults:
           run:
             shell: bash
@@ -30,9 +30,8 @@ jobs:
               az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID --allow-no-subscriptions
               az account set --subscription $AZURE_SUBSCRIPTIONID
             
-          - name: Publish Zip
+          - name: Deploy Function App
             run: |
-              ls -a
               az functionapp config appsettings delete --name zonaldeployment-azpoe-function --resource-group zonaldeployment-azpoe-rg --setting-names WEBSITE_RUN_FROM_PACKAGE WEBSITE_USE_ZIP WEBSITE_CONTENTAZUREFILECONNECTIONSTRING WEBSITE_CONTENTSHARE
               func azure functionapp publish zonaldeployment-azpoe-function --python
           
