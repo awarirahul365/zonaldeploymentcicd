@@ -7,6 +7,7 @@ from operations.execution import Execution
 import itertools
 import os
 
+# newcicd
 app = func.FunctionApp(http_auth_level=func.AuthLevel.FUNCTION)
 
 
@@ -24,7 +25,7 @@ async def http_trigger_zonal(req: func.HttpRequest) -> func.HttpResponse:
     | where SID!= 'for' 
     | where tags['comment'] contains ' CI '  or tags['comment'] contains 'AI' or tags['comment'] contains ' DB ' 
     | extend nic_id= tostring(properties['networkProfile']['networkInterfaces'][0]['id']) 
-    //| where SID == "HEA" and CustomerID == "NEE" or SID == "N3D" and CustomerID == "NEE" or SID == "SMD" and CustomerID == "CSD" or SID == "E9E" and CustomerID == "NEE" 
+    | where SID == "HEA" and CustomerID == "NEE" or SID == "N3D" and CustomerID == "NEE" or SID == "SMD" and CustomerID == "CSD" or SID == "E9E" and CustomerID == "NEE" 
     //| where SID == "N3D" and CustomerID == "NEE"
     | project id,resourceGroup, name,CustomerID,SID,tags['comment'],LandscapeID,appid=case(tags['comment'] contains 'CI','CI',tags['comment'] contains 'DB','DB','AI'),SIDCID=strcat(SID,CustomerID),zones,tenantId"""
 
