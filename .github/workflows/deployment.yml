@@ -33,7 +33,7 @@ jobs:
           - name: Publish Zip
             run: |
               ls -a
-              func azure functionapp publish zonaldeployment-azpoe-function  
+              func azure functionapp publish zonaldeployment-azpoe-function --python
           
 
 
